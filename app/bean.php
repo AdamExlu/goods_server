@@ -133,7 +133,7 @@ return [
     'rpcServer'          => [
         'class' => ServiceServer::class,
         'listener' => [
-            'http' => bean('httpServer'),
+//            'http' => bean('httpServer'),
         ]
     ],
     'wsServer'           => [
@@ -192,4 +192,10 @@ return [
     ],
     'cliRouter'          => [// 'disabledGroups' => ['demo', 'test'],
     ],
+
+    //设置consul客户端
+    'consul' => [
+        'host' => '170.200.7.50',
+        'port' => 8500,
+    ]
 ];

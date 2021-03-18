@@ -17,6 +17,7 @@ use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Server\SwooleEvent;
+use Swoft\Config\Annotation\Mapping\Config;
 
 /**
  * Class RegisterServiceListener
@@ -35,6 +36,11 @@ class RegisterServiceListener implements EventHandlerInterface
     private $agent;
 
     /**
+     * @Config("consul.consul_server_name")
+     */
+    private $serviceName;
+
+    /**
      * @param EventInterface $event
      */
     public function handle(EventInterface $event): void
@@ -43,12 +49,12 @@ class RegisterServiceListener implements EventHandlerInterface
         $httpServer = $event->getTarget();
 
         $service = [
-            'ID'                => 'swoft',
-            'Name'              => 'swoft',
+            'ID'                => getConsulServerId($this->serviceName),
+            'Name'              => $this->serviceName,
             'Tags'              => [
                 'http'
             ],
-            'Address'           => '127.0.0.1',
+            'Address'           => env('HOST'),
             'Port'              => $httpServer->getPort(),
             'Meta'              => [
                 'version' => '1.0'
@@ -57,12 +63,17 @@ class RegisterServiceListener implements EventHandlerInterface
             'Weights'           => [
                 'Passing' => 10,
                 'Warning' => 1
+            ],
+            'Check' => [
+                'name' => 'goods.server',
+                env('CONSUL_CHECK_TYPE') => env('CONSUL_CHECK_IP').':'.env('CONSUL_CHECK_PORT'),
+                'interval' => '5s',     //每隔几秒检测
+                'timeout' => '2s'       //发送数据包，接收数据超时时间
             ]
         ];
 
-
         // Register
-        //        $this->agent->registerService($service);
-        //        CLog::info('Swoft http register service success by consul!');
+        $this->agent->registerService($service);
+//                CLog::info('Swoft http register service success by consul!');
     }
 }

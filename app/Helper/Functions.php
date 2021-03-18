@@ -12,3 +12,16 @@ function user_func(): string
 {
     return 'hello';
 }
+
+if (!function_exists('getConsulServerId')) {
+    /**
+     * @param string $serverName
+     * @return string
+     */
+    function getConsulServerId(string $serverName): string
+    {
+        $ip = env('HOST');
+        return $serverName.'_'.$ip;
+    }
+}
+

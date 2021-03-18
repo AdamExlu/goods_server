@@ -17,6 +17,7 @@ use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Server\SwooleEvent;
+use Swoft\Config\Annotation\Mapping\Config;
 
 /**
  * Class DeregisterServiceListener
@@ -35,6 +36,11 @@ class DeregisterServiceListener implements EventHandlerInterface
     private $agent;
 
     /**
+     * @Config("consul.consul_server_name")
+     */
+    private $serviceName;
+
+    /**
      * @param EventInterface $event
      */
     public function handle(EventInterface $event): void
@@ -42,6 +48,6 @@ class DeregisterServiceListener implements EventHandlerInterface
         /** @var HttpServer $httpServer */
         $httpServer = $event->getTarget();
 
-        //$this->agent->deregisterService('swoft');
+        $this->agent->deregisterService(getConsulServerId($this->serviceName));
     }
 }
